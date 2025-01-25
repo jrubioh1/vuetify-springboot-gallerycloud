@@ -1,4 +1,4 @@
-### spring ###
+####### spring ########
 springboot-galleryCloud/HELP.md
 springboot-galleryCloud/target/
 springboot-galleryCloud/!.mvn/wrapper/maven-wrapper.jar
@@ -34,7 +34,7 @@ springboot-galleryCloud/!**/src/test/**/build/
 ### VS Code ###
 springboot-galleryCloud/.vscode/
 
-### vuetify ###
+##### vuetify ######
 
 
 vuetify-galleryCloud/.DS_Store
