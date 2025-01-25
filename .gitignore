@@ -4,7 +4,6 @@ springboot-galleryCloud/target/
 springboot-galleryCloud/!.mvn/wrapper/maven-wrapper.jar
 springboot-galleryCloud/!**/src/main/**/target/
 springboot-galleryCloud/!**/src/test/**/target/
-springboot-galleryCloud/uploads/*
 
 ### STS ###
 springboot-galleryCloud/.apt_generated
