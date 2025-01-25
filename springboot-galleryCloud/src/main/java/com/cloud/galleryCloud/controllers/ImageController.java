@@ -51,7 +51,7 @@ public class ImageController {
 @PostMapping("/upload")
 public ResponseEntity<List<Image>> uploadImages(@RequestParam("files") List<MultipartFile> files,
                                                 @RequestParam(defaultValue="1") Long userId) {
-
+    System.out.println("!!!SE ESTA ASIGNADO AL USUARIO CON ID: "+userId+"!! \n ¡¡ESTA POR DEFAUL HASTA QUE SE IMPLEMENTE EL LOGIN Y COJA EL ID DEL USUARIO LOGEADO!!!");
     try {
         List<Image> images = files.stream().map(file -> {
             try {
@@ -98,7 +98,7 @@ public ResponseEntity<Map<String, Object>> getFilteredImages(
         @RequestParam(required = false) Integer month,
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "20") int size) {
-
+    
     Pageable pageable = PageRequest.of(page, size);
     Page<Image> imagesPage;
 
@@ -110,7 +110,6 @@ public ResponseEntity<Map<String, Object>> getFilteredImages(
     } else {
         imagesPage = imageService.getAllImagesPaginator(pageable);
     }
-    System.out.println(imagesPage.getNumber());
 
     // Mapear las URLs completas de las imágenes
     List<Image> images = imagesPage.getContent();

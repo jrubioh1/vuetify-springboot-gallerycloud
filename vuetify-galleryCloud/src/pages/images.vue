@@ -1,5 +1,4 @@
 <template>
-  {{ selected }}
   <v-container
     v-if="images"
     class="my-5"
