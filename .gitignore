@@ -1,3 +1,4 @@
+### spring ###
 springboot-galleryCloud/HELP.md
 springboot-galleryCloud/target/
 springboot-galleryCloud/!.mvn/wrapper/maven-wrapper.jar
@@ -20,14 +21,41 @@ springboot-galleryCloud/*.iml
 springboot-galleryCloud/*.ipr
 
 ### NetBeans ###
-springboot-galleryCloud//nbproject/private/
-springboot-galleryCloud//nbbuild/
-springboot-galleryCloud//dist/
-springboot-galleryCloud//nbdist/
-springboot-galleryCloud//.nb-gradle/
+springboot-galleryCloud/nbproject/private/
+springboot-galleryCloud/nbbuild/
+springboot-galleryCloud/dist/
+springboot-galleryCloud/nbdist/
+springboot-galleryCloud/.nb-gradle/
 springboot-galleryCloud/build/
 springboot-galleryCloud/!**/src/main/**/build/
 springboot-galleryCloud/!**/src/test/**/build/
 
 ### VS Code ###
 springboot-galleryCloud/.vscode/
+
+### vuetify ###
+
+
+vuetify-galleryCloud/.DS_Store
+vuetify-galleryCloud/node_modules
+vuetify-galleryCloud/dist
+
+# local env files
+vuetify-galleryCloud/.env.local
+vuetify-galleryCloud/.env.*.local
+
+# Log files
+vuetify-galleryCloud/npm-debug.log*
+vuetify-galleryCloud/yarn-debug.log*
+vuetify-galleryCloud/yarn-error.log*
+vuetify-galleryCloud/pnpm-debug.log*
+
+# Editor directories and files
+vuetify-galleryCloud/.idea
+vuetify-galleryCloud/.vscode
+vuetify-galleryCloud/*.suo
+vuetify-galleryCloud/*.ntvs*
+vuetify-galleryCloud/*.njsproj
+vuetify-galleryCloud/*.sln
+vuetify-galleryCloud/*.sw?
+
