@@ -1,0 +1,33 @@
+springboot-galleryCloud/HELP.md
+springboot-galleryCloud/target/
+springboot-galleryCloud/!.mvn/wrapper/maven-wrapper.jar
+springboot-galleryCloud/!**/src/main/**/target/
+springboot-galleryCloud/!**/src/test/**/target/
+
+### STS ###
+springboot-galleryCloud/.apt_generated
+springboot-galleryCloud/.classpath
+springboot-galleryCloud/.factorypath
+springboot-galleryCloud/.project
+springboot-galleryCloud/.settings
+springboot-galleryCloud/.springBeans
+springboot-galleryCloud/.sts4-cache
+
+### IntelliJ IDEA ###
+springboot-galleryCloud/.idea
+springboot-galleryCloud/*.iws
+springboot-galleryCloud/*.iml
+springboot-galleryCloud/*.ipr
+
+### NetBeans ###
+springboot-galleryCloud//nbproject/private/
+springboot-galleryCloud//nbbuild/
+springboot-galleryCloud//dist/
+springboot-galleryCloud//nbdist/
+springboot-galleryCloud//.nb-gradle/
+springboot-galleryCloud/build/
+springboot-galleryCloud/!**/src/main/**/build/
+springboot-galleryCloud/!**/src/test/**/build/
+
+### VS Code ###
+springboot-galleryCloud/.vscode/
