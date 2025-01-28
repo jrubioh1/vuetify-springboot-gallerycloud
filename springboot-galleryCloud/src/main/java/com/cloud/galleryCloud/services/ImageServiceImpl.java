@@ -6,8 +6,11 @@ import java.nio.file.Path;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.format.TextStyle;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -167,35 +170,45 @@ public Optional<Image> updateImage(Long id, String newName, MultipartFile newFil
     public Page<Image> getImagesByYearPaginator(int year, Pageable pageable) {
         return imageRepository.findByYearPaginator(year, pageable);
     }
-
     @Override
     @Transactional(readOnly = true)
-    public Page<Image> getImagesByYearAndMonthPaginator(int year, int month, Pageable pageable) {
+    public Page<Image> getImagesByYearAndMonthPaginator(int year, String monthName, Locale locale, Pageable pageable) {
+        // Convertir el nombre del mes al número del mes según el Locale
+        int month = parseMonthNameToNumber(monthName, locale);
         return imageRepository.findByYearAndMonthPaginator(year, month, pageable);
     }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Map<Integer, List<String>> getAvailableYearsAndMonths() {
-        Map<Integer, List<String>> groupedYearsMonths = new LinkedHashMap<>();
-
-        // Obtener años únicos
-        List<Integer> years = imageRepository.findDistinctYears();
-
-        for (Integer year : years) {
-            // Obtener meses únicos para cada año
-            List<Integer> months = imageRepository.findDistinctMonthsByYear(year);
-
-            // Convertir los meses a nombres de meses
-            List<String> monthNames = months.stream()
-                    .map(month -> new java.text.DateFormatSymbols().getMonths()[month - 1])
-                    .collect(Collectors.toList());
-
-            groupedYearsMonths.put(year, monthNames);
+    
+    // Método auxiliar para convertir el nombre del mes a un número
+    private int parseMonthNameToNumber(String monthName, Locale locale) {
+        for (Month month : Month.values()) {
+            if (month.getDisplayName(TextStyle.FULL, locale).equalsIgnoreCase(monthName)) {
+                return month.getValue();
+            }
         }
-
-        return groupedYearsMonths;
+        throw new IllegalArgumentException("Mes inválido: " + monthName);
     }
+    @Override
+@Transactional(readOnly = true)
+public Map<Integer, List<String>> getAvailableYearsAndMonths(Locale locale) {
+    Map<Integer, List<String>> groupedYearsMonths = new LinkedHashMap<>();
+
+    // Obtener años únicos
+    List<Integer> years = imageRepository.findDistinctYears();
+
+    for (Integer year : years) {
+        // Obtener meses únicos para cada año
+        List<Integer> months = imageRepository.findDistinctMonthsByYear(year);
+
+        // Convertir los meses a nombres de meses traducidos
+        List<String> monthNames = months.stream()
+                .map(month -> Month.of(month).getDisplayName(TextStyle.FULL, locale)) // Traducir según Locale
+                .collect(Collectors.toList());
+
+        groupedYearsMonths.put(year, monthNames);
+    }
+
+    return groupedYearsMonths;
+}
 
     @Override
     public List<Object[]> getPhotosStatistics() {

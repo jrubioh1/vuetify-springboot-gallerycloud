@@ -151,7 +151,7 @@
             sm="6"
             md="4"
           >
-            <span class="text-h6">{{ `${month_} ${year}` }}</span>
+            <span class="text-h6">{{ `${month_.toUpperCase()} ${year}` }}</span>
           </v-col><v-divider class="my-3" />
          
 

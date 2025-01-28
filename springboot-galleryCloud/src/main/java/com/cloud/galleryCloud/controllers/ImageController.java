@@ -1,7 +1,6 @@
 package com.cloud.galleryCloud.controllers;
 
 import com.cloud.galleryCloud.entities.Image;
-import com.cloud.galleryCloud.repositories.IImagesRepository;
 import com.cloud.galleryCloud.services.interfaces.IImageService;
 import com.cloud.galleryCloud.validators.ImageValidator;
 
@@ -110,16 +109,19 @@ public ResponseEntity<List<Image>> uploadImages(@RequestParam("files") List<Mult
 @GetMapping("/paginator")
 public ResponseEntity<Map<String, Object>> getFilteredImages(
         @RequestParam(required = false) Integer year,
-        @RequestParam(required = false) Integer month,
+        @RequestParam(required = false) String month,
         @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "20") int size) {
+        @RequestParam(defaultValue = "20") int size,
+        @RequestHeader(value = "Accept-Language", defaultValue = "en") String acceptLanguage) {
+
     int nextPage = page + 1;
     Pageable pageable = PageRequest.of(page, size);
     Page<Image> imagesPage;
+    Locale locale = Locale.forLanguageTag(acceptLanguage);
 
     // Filtrar según los parámetros
     if (year != null && month != null) {
-        imagesPage = imageService.getImagesByYearAndMonthPaginator(year, month, pageable);
+        imagesPage = imageService.getImagesByYearAndMonthPaginator(year, month, locale, pageable);
     } else if (year != null) {
         imagesPage = imageService.getImagesByYearPaginator(year, pageable);
     } else {
@@ -129,34 +131,33 @@ public ResponseEntity<Map<String, Object>> getFilteredImages(
     // Mapear las URLs completas de las imágenes
     List<Image> images = imagesPage.getContent();
 
-    // Agrupar imágenes por año y mes
-    Map<Integer, Map<Integer, List<Image>>> groupedImages = new TreeMap<>();
+    // Agrupar imágenes por año y mes, con el mes en formato de texto traducido
+    Map<Integer, Map<String, List<Image>>> groupedImages = new TreeMap<>();
     
     for (Image img : images) {
         int imgYear = img.getYear(); 
-        int imgMonth = img.getMonth(); 
+        int imgMonth = img.getMonth();
+        String monthName = Month.of(imgMonth).getDisplayName(TextStyle.FULL, locale);  // Traducir el mes
 
         groupedImages
             .computeIfAbsent(imgYear, k -> new TreeMap<>())
-            .computeIfAbsent(imgMonth, k -> new ArrayList<>())
+            .computeIfAbsent(monthName, k -> new ArrayList<>())
             .add(img);
     }
 
     // Construir la URL de la siguiente página si hay más elementos
-    System.out.println("page: "+page);
     String nextUrl = null;
     if (imagesPage.hasNext()) {
-        System.out.println(nextPage);
-        nextUrl = URL_API+String.format("api/images/paginator?page=%d",nextPage);
+        nextUrl = URL_API + String.format("api/images/paginator?page=%d", nextPage);
         if (year != null) nextUrl += "&year=" + year;
         if (month != null) nextUrl += "&month=" + month;
     }
-    
 
     // Construir la respuesta JSON
     Map<String, Object> response = new HashMap<>();
     response.put("results", groupedImages);
     response.put("next", nextUrl); 
+
     return ResponseEntity.ok(response);
 }
     /**
@@ -230,10 +231,16 @@ public ResponseEntity<Map<String, Object>> getFilteredImages(
     }
 
     @GetMapping("/available-years-months")
-    public ResponseEntity<Map<Integer, List<String>>> getAvailableYearsAndMonths() {
+    public ResponseEntity<Map<Integer, List<String>>> getAvailableYearsAndMonths(
+            @RequestHeader(value = "Accept-Language", defaultValue = "en") String acceptLanguage) {
         try {
-            Map<Integer, List<String>> groupedYearsMonths = imageService.getAvailableYearsAndMonths();
-            return ResponseEntity.ok(groupedYearsMonths);
+            // Convertir el encabezado Accept-Language en un Locale
+            Locale locale = Locale.forLanguageTag(acceptLanguage);
+    
+            // Delegar la lógica al servicio
+            Map<Integer, List<String>> availableYearsMonths = imageService.getAvailableYearsAndMonths(locale);
+    
+            return ResponseEntity.ok(availableYearsMonths);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(null);
         }
@@ -245,10 +252,10 @@ public ResponseEntity<Map<String, Object>> getFilteredImages(
     }
 
     @GetMapping("/photos-tree-statistics")
-public ResponseEntity<List<Map<String, Object>>> getPhotosTreeStatistics() {
+public ResponseEntity<List<Map<String, Object>>> getPhotosTreeStatistics(@RequestHeader(value = "Accept-Language", defaultValue = "en") String acceptLanguage) {
     List<Map<String, Object>> data = new ArrayList<>();
     Map<Integer, Map<String, Object>> years = new TreeMap<>();
-
+    Locale locale = Locale.forLanguageTag(acceptLanguage);
     // Obtener las estadísticas de imágenes agrupadas por año y mes
     List<Object[]> photosData = imageService.getPhotosStatistics();
 
@@ -267,7 +274,7 @@ public ResponseEntity<List<Map<String, Object>>> getPhotosTreeStatistics() {
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> children = (List<Map<String, Object>>) yearData.get("children");
         Map<String, Object> monthData = new HashMap<>();
-        monthData.put("name", Month.of(month).getDisplayName(TextStyle.FULL, Locale.ENGLISH));
+        monthData.put("name", Month.of(month).getDisplayName(TextStyle.FULL, locale));
         monthData.put("value", count);
         children.add(monthData);
     }
