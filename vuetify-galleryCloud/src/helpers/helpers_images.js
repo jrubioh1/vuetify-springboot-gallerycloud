@@ -21,10 +21,10 @@ function getMonthNameList(monthNumberList) {
   }
 
  async function download_image(id, apiUrl) {
+
   try {
-    const response = await axiosWrapper.get(`${apiUrl}uploads/download_image/?id=${id}`, {
-      responseType: 'blob',
-    });
+  
+    const response = await axiosWrapper.get(`${apiUrl}api/images/download?id=${id}`, null, '','blob');
     const blob = response.data;
     const blobUrl = URL.createObjectURL(blob);
 
@@ -44,10 +44,7 @@ async function download_selected(selectedIds, apiUrl) {
     const formData = new FormData();
     selectedIds.forEach(id => formData.append('id', id));
 
-    const response = await axiosWrapper.post(`${apiUrl}uploads/download_selected/`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-      responseType: 'blob',
-    });
+    const response = await axiosWrapper.post(`${apiUrl}api/images/download-selected`, formData, 'multipart/form-data','blob');
 
     const blob = new Blob([response.data], { type: 'application/zip' });
     const blobUrl = URL.createObjectURL(blob);

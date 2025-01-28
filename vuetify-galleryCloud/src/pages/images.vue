@@ -249,7 +249,7 @@ const handleScroll = debounce(() => {
   const clientHeight = window.innerHeight || document.documentElement.clientHeight;
 
   if (scrollTop + clientHeight >= scrollHeight - 200 && next.value) {
-    useAppStore().get_next_or_previous_page(next.value);
+    useAppStore().get_next_or_previous_page();
   }
 }, 200);
 const scrollTop=()=>{

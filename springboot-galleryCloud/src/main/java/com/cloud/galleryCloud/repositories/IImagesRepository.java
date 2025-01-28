@@ -26,25 +26,28 @@ public interface IImagesRepository extends CrudRepository<Image, Long> {
     @Query("SELECT i FROM Image i WHERE YEAR(i.createdAt) = :year")
     Optional<ArrayList<Image>> findByYear(@Param("year") int year);
 
-    // Buscar imágenes por año y mes, ordenadas de forma decreciente por updatedAt
-    @Query("SELECT i FROM Image i WHERE EXTRACT(YEAR FROM i.updatedAt) = :year AND EXTRACT(MONTH FROM i.updatedAt) = :month ORDER BY i.updatedAt DESC")
+    @Query("SELECT i FROM Image i WHERE EXTRACT(YEAR FROM i.createdAt) = :year AND EXTRACT(MONTH FROM i.createdAt) = :month ORDER BY i.createdAt DESC")
     Page<Image> findByYearAndMonthPaginator(@Param("year") int year, @Param("month") int month, Pageable pageable);
 
-    // Buscar imágenes solo por año, ordenadas de forma decreciente por updatedAt
-    @Query("SELECT i FROM Image i WHERE EXTRACT(YEAR FROM i.updatedAt) = :year ORDER BY i.updatedAt DESC")
+    @Query("SELECT i FROM Image i WHERE EXTRACT(YEAR FROM i.createdAt) = :year ORDER BY i.createdAt DESC")
     Page<Image> findByYearPaginator(@Param("year") int year, Pageable pageable);
 
-    // Alias para paginar todas las imágenes, ordenadas de forma decreciente por updatedAt
-    @Query("SELECT i FROM Image i ORDER BY i.updatedAt DESC")
+    @Query("SELECT i FROM Image i ORDER BY i.createdAt DESC")
     Page<Image> findAllPaginator(Pageable pageable);
 
     // Obtener años únicos ordenados
-    @Query("SELECT DISTINCT EXTRACT(YEAR FROM i.updatedAt) AS year FROM Image i ORDER BY year DESC")
+    @Query("SELECT DISTINCT EXTRACT(YEAR FROM i.createdAt) AS year FROM Image i ORDER BY year DESC")
     List<Integer> findDistinctYears();
 
     // Obtener meses únicos de un año específico
-    @Query("SELECT DISTINCT EXTRACT(MONTH FROM i.updatedAt) AS month FROM Image i WHERE EXTRACT(YEAR FROM i.updatedAt) = :year ORDER BY month DESC")
+    @Query("SELECT DISTINCT EXTRACT(MONTH FROM i.createdAt) AS month FROM Image i WHERE EXTRACT(YEAR FROM i.createdAt) = :year ORDER BY month DESC")
     List<Integer> findDistinctMonthsByYear(@Param("year") int year);
+
+    @Query("SELECT YEAR(i.createdAt), MONTH(i.createdAt), COUNT(i.id) " +
+       "FROM Image i GROUP BY YEAR(i.createdAt), MONTH(i.createdAt) " +
+       "ORDER BY YEAR(i.createdAt), MONTH(i.createdAt)")
+        List<Object[]> getPhotosStatistics();
+    
 }
 
 

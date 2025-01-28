@@ -196,4 +196,17 @@ public Optional<Image> updateImage(Long id, String newName, MultipartFile newFil
 
         return groupedYearsMonths;
     }
+
+    @Override
+    public List<Object[]> getPhotosStatistics() {
+    return imageRepository.getPhotosStatistics();
+}
+    @Override
+    public List<Image> findAllById(List<Long> ids) {
+        return(List<Image>)imageRepository.findAllById(ids);
+    }
+    @Override
+    public Optional<Image> findById(Long id) {
+        return imageRepository.findById(id);
+    }
 }

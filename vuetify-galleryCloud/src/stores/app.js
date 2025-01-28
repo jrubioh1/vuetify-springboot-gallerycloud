@@ -9,6 +9,7 @@ export const useAppStore = defineStore('app', {
     selectableDate:null,
     selectedYear: null,
     selectedMonth: null,
+    currentPage:null,
     next:null,
     images:null,
     staistics:null,
@@ -41,11 +42,14 @@ export const useAppStore = defineStore('app', {
       }finally {
         this.loading = false;
       }
-    },async get_next_or_previous_page(url) {
-      console.log(url)
-      try{const response = await axiosWrapper.get(url);
+    },async get_next_or_previous_page() {
+      console.log(this.next, 'next')
+      try{
+        if(this.next!=null){
+        const response = await axiosWrapper.get(this.next);
         console.log(response.data)
-      const newImages = response.data.results;
+        const newImages = response.data.results;
+        this.next = response.data.next;
     
       // Agregar nuevas imágenes a las existentes
       Object.entries(newImages).forEach(([year, months]) => {
@@ -59,6 +63,7 @@ export const useAppStore = defineStore('app', {
           this.images[year][month].push(...images);
         });
       });
+    }
     }catch(e){
       console.log(e)
     }
@@ -80,7 +85,7 @@ export const useAppStore = defineStore('app', {
     async get_satistics(){
       this.staistics=null
       try{
-        const response= await axiosWrapper.get(this.api+'uploads/photos_tree_staistics/')
+        const response= await axiosWrapper.get(this.api+'api/images/photos-tree-statistics')
         if(response.data.length!=0)this.staistics=response.data
       }
       catch(e){

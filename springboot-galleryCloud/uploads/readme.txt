@@ -1,1 +1,1 @@
-En este directorio se realizada el guardado de las imagenes.
+En este directorio se realizada el guardado de las imagenes. 

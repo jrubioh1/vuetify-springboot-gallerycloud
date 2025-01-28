@@ -73,4 +73,7 @@ public interface IImageService {
 
     Map<Integer, List<String>> getAvailableYearsAndMonths();
 
+    List<Object[]> getPhotosStatistics();
+    List<Image> findAllById(List<Long> ids);
+    Optional<Image> findById(Long id);
 }

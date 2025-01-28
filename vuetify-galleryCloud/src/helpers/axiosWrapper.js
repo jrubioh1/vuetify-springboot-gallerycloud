@@ -10,7 +10,7 @@ export const axiosWrapper = {
 };
 
 function request(method) {
-    return async(url, body, contentType='application/json') => {
+    return async(url, body=null, contentType='application/json', responseType='json') => {
         const requestOptions = {
             method,
             // headers: authHeader(url)
@@ -26,7 +26,7 @@ function request(method) {
         }
         try{
            console.log({method, url, headers:requestOptions.headers, data:requestOptions.body})
-            const response= await axios({method, url, headers:requestOptions.headers, data:requestOptions.body})
+            const response= await axios({method, url, headers:requestOptions.headers, data:requestOptions.body, responseType:responseType})
             return handleResponse(response)
         }catch(e){
             return handleResponse(e.response) || e
