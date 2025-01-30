@@ -53,4 +53,6 @@ public interface IUser {
      * @return Una lista de imágenes asociadas al usuario.
      */
     List<Image> getUserImages(Long userId);
+
+    Optional<User> findByUsername(String email);
 }

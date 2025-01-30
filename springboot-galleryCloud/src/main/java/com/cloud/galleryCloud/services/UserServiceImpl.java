@@ -3,12 +3,14 @@ package com.cloud.galleryCloud.services;
 import com.cloud.galleryCloud.entities.Image;
 import com.cloud.galleryCloud.entities.User;
 import com.cloud.galleryCloud.repositories.IImagesRepository;
+import com.cloud.galleryCloud.repositories.IRolRepository;
 import com.cloud.galleryCloud.repositories.IUserRepository;
 import com.cloud.galleryCloud.services.interfaces.IUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,10 +23,12 @@ public class UserServiceImpl implements IUser {
     @Autowired
     private IImagesRepository imagesRepository;
 
+    @Autowired IRolRepository rolRepository;
+
     @Override
     @Transactional
     public User createUser(User user) {
-        // Crear un nuevo usuario
+        user.setRoles(Arrays.asList(rolRepository.findByName("ROLE_USER").orElseThrow()));
         return userRepository.save(user);
     }
 
@@ -44,14 +48,13 @@ public class UserServiceImpl implements IUser {
 
     @Override
     @Transactional
-    public Optional<User> updateUser(Long id, User updatedUser) {
-        // Actualizar los datos de un usuario
-        return userRepository.findById(id).map(user -> {
-            user.setUsername(updatedUser.getUsername());
-            user.setEmail(updatedUser.getEmail());
-            // Actualizar otros campos según tu modelo
-            return userRepository.save(user);
-        });
+    public Optional<User> updateUser(Long id, User user) {
+         // Verificamos si el usuario existe antes de actualizar
+         if (userRepository.existsById(user.getId())) {
+            User updatedUser = userRepository.save(user);
+            return Optional.of(updatedUser);
+        }
+        return Optional.empty();
     }
 
     @Override
@@ -67,9 +70,14 @@ public class UserServiceImpl implements IUser {
     @Override
     @Transactional(readOnly = true)
     public List<Image> getUserImages(Long userId) {
-        // Obtener imágenes asociadas a un usuario
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with id " + userId));
         return imagesRepository.findByUser(user);
+    }
+
+    @Override
+    public Optional<User> findByUsername(String username) {
+        return userRepository.findByUsername(username);
+        
     }
 }

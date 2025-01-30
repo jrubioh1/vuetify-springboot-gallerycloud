@@ -8,9 +8,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
@@ -48,29 +52,44 @@ public class User {
     @JsonIgnore
     private List<Image> images = new ArrayList<>();
 
+    @ManyToMany(fetch = FetchType.LAZY, cascade = { jakarta.persistence.CascadeType.PERSIST, jakarta.persistence.CascadeType.MERGE })
+    @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "rol_id"))
+    private List<Rol> roles = new ArrayList<>();
+
+    private Boolean enabled;
+
+
     public User(Long id) {
         this.id = id;
     }
 
-    public User(String username, String password, String email, LocalDateTime lastLogin,
-            ArrayList<Image> images) {
+   
+
+    public User(@NotBlank String username, @NotBlank String password, @NotBlank String email, List<Rol> roles) {
         this.username = username;
         this.password = password;
         this.email = email;
-        this.lastLogin = lastLogin;
-        this.images = images;
+        this.roles = roles;
     }
 
-    public User(String username, String password, String email, LocalDateTime lastLogin) {
-        this.username = username;
-        this.password = password;
-        this.email = email;
-        this.lastLogin = lastLogin;
-    }
+
+
     @PrePersist
     public void prePersist() {
         createdAt = LocalDateTime.now();
+        enabled = true;
     }
+
+
+    public boolean isEnabled(){
+        return this.enabled;
+    }
+
+    public void setEnabled(boolean enabled){
+        this.enabled=enabled;
+    }
+
+
 
     @Override
     public int hashCode() {
@@ -80,6 +99,8 @@ public class User {
         result = prime * result + ((username == null) ? 0 : username.hashCode());
         return result;
     }
+
+
 
     @Override
     public boolean equals(Object obj) {
@@ -103,10 +124,13 @@ public class User {
         return true;
     }
 
+
+
     @Override
     public String toString() {
         return "User [id=" + id + ", username=" + username + ", password=" + password + ", email=" + email
-                + ", createdAt=" + createdAt + ", lastLogin=" + lastLogin + "]";
+                + ", createdAt=" + createdAt + ", lastLogin=" + lastLogin + ", images=" + images + ", roles=" + roles
+                + ", enabled=" + enabled + "]";
     }
 
     

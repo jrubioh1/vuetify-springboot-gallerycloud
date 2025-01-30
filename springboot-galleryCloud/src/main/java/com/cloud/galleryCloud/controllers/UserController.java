@@ -5,17 +5,23 @@ import com.cloud.galleryCloud.entities.User;
 import com.cloud.galleryCloud.services.interfaces.IUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
 
     @Autowired
     private IUser userService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     /**
      * Endpoint para crear un nuevo usuario.
@@ -24,9 +30,18 @@ public class UserController {
      * @return El usuario creado.
      */
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<User> createUser(@RequestBody User user) {
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         User createdUser = userService.createUser(user);
         return ResponseEntity.ok(createdUser);
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<?> register( @RequestBody User user) {
+       
+        return createUser(user);
     }
 
     /**

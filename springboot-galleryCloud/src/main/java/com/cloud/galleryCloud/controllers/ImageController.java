@@ -1,7 +1,9 @@
 package com.cloud.galleryCloud.controllers;
 
 import com.cloud.galleryCloud.entities.Image;
+import com.cloud.galleryCloud.entities.User;
 import com.cloud.galleryCloud.services.interfaces.IImageService;
+import com.cloud.galleryCloud.services.interfaces.IUser;
 import com.cloud.galleryCloud.validators.ImageValidator;
 
 
@@ -12,6 +14,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,6 +40,8 @@ import java.util.TreeMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+
+@CrossOrigin(origins = "http://localhost:4200", originPatterns = "*")
 @RestController
 @RequestMapping("/api/images")
 public class ImageController {
@@ -43,16 +49,17 @@ public class ImageController {
 
     @Autowired
     private IImageService imageService;
+
+    @Value("${url.api}")
     public String URL_API;
 
     @Autowired
     private ImageValidator imageValidator;
     
 
-    @Value("${url.api}")
-    public void setURL_API(String URL_API) {
-        this.URL_API = URL_API;
-    }
+   
+   @Autowired
+   private IUser userService;
     
 
 /**
@@ -63,17 +70,18 @@ public class ImageController {
  * @return Lista de imágenes creadas.
  */
 @PostMapping("/upload")
-public ResponseEntity<List<Image>> uploadImages(@RequestParam("files") List<MultipartFile> files,
-                                                @RequestParam(defaultValue="1") Long userId) {
-    System.out.println("!!!SE ESTA ASIGNADO AL USUARIO CON ID: "+userId+"!! \n ¡¡ESTA POR DEFAUL HASTA QUE SE IMPLEMENTE EL LOGIN Y COJA EL ID DEL USUARIO LOGEADO!!!");
+public ResponseEntity<List<Image>> uploadImages(@RequestParam("files") List<MultipartFile> files) {
     try {
         List<Image> images = files.stream().map(file -> {
             try {
                 // Validar cada archivo
                 imageValidator.validate(file);
 
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            User userDB= userService.findByUsername(authentication.getName()).orElseThrow();
+
                 // Subir la imagen
-                return imageService.uploadImage(file, userId);
+                return imageService.uploadImage(file, userDB.getId());
             } catch (IOException e) {
                 throw new RuntimeException("Error al procesar la imagen: " + file.getOriginalFilename(), e);
             }
